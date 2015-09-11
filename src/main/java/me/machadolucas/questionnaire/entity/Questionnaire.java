@@ -1,7 +1,6 @@
 package me.machadolucas.questionnaire.entity;
 
 import java.util.List;
-import java.util.Set;
 
 import lombok.Data;
 
@@ -16,7 +15,7 @@ public class Questionnaire {
     private Integer age;
     private String gender;
 
-    private Set<Question> questions;
+    private List<Question> questions;
 
     private List<String> preferredDevices;
 
