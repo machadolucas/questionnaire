@@ -1,14 +1,15 @@
 package me.machadolucas.questionnaire.ui;
 
+import me.machadolucas.questionnaire.entity.Questionnaire;
+import me.machadolucas.questionnaire.repository.QuestionnaireRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import me.machadolucas.questionnaire.entity.Questionnaire;
-import me.machadolucas.questionnaire.repository.QuestionnaireRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Theme("valo")
 @SpringUI
@@ -18,8 +19,6 @@ public class IndexUI extends UI {
     public QuestionnaireRepository questionnaireRepository;
 
     Questionnaire questionnaire;
-
-    Wizard wizard = new Wizard();
 
     // we can use either constructor autowiring or field autowiring
     @Autowired
@@ -36,13 +35,12 @@ public class IndexUI extends UI {
     }
 
     private void buildLayout() {
+        Wizard wizard = new Wizard();
 
-        final VerticalLayout root = new VerticalLayout(wizard);
-        root.setSizeFull();
-        root.setMargin(true);
-        root.setSpacing(true);
-        setContent(root);
-
+        wizard.setSizeFull();
+        wizard.setMargin(true);
+        wizard.setSpacing(true);
+        setContent(wizard);
 
     }
 

@@ -1,10 +1,11 @@
 package me.machadolucas.questionnaire.entity;
 
-import lombok.Data;
-import org.springframework.data.annotation.Id;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import lombok.Data;
+
+import org.springframework.data.annotation.Id;
 
 @Data
 public class Question {
@@ -13,6 +14,9 @@ public class Question {
     private String id;
 
     private String name;
+
+    private String title;
+    private String description;
 
     private Map<Devices, Integer> devices;
 

@@ -1,28 +1,30 @@
 package me.machadolucas.questionnaire.ui;
 
-import com.vaadin.ui.*;
-import com.vaadin.ui.themes.ValoTheme;
-
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by machadolucas on 16/09/15.
- */
+import me.machadolucas.questionnaire.entity.Question;
+import me.machadolucas.questionnaire.helper.QuestionsCreator;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.ProgressBar;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+
 public class Wizard extends VerticalLayout {
 
     ProgressBar progressBar = new ProgressBar(0);
     Panel content = new Panel();
 
-    List<WizardViews> wizardViewsList = new ArrayList<>();
+    List<WizardViews> wizardViewsList = new LinkedList<>();
 
-
-    HorizontalLayout bar = new HorizontalLayout();
     private int currentWizardViewIndex = 0;
 
     Button previous = new Button("Anterior", this::previous);
     Button next = new Button("Próximo", this::next);
-
 
     public Wizard() {
         configureComponents();
@@ -31,15 +33,17 @@ public class Wizard extends VerticalLayout {
 
     private void configureComponents() {
 
-        bar.addComponents(previous, next);
-        bar.setSpacing(true);
-
         wizardViewsList.add(new FirstWizardView());
+        List<Question> questions = QuestionsCreator.createQuestions();
+        for (Question question : questions) {
+            wizardViewsList.add(new QuestionsView(question));
+        }
+
+        previous.setEnabled(false);
 
         next.setStyleName(ValoTheme.BUTTON_PRIMARY);
-//        next.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+        // next.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         content.setContent(wizardViewsList.get(currentWizardViewIndex));
-
 
     }
 
@@ -47,35 +51,59 @@ public class Wizard extends VerticalLayout {
         setSizeFull();
         setMargin(true);
 
-//        HorizontalLayout actions = new HorizontalLayout(salvar, cancelar);
-//        actions.setSpacing(true);
+        progressBar.setWidth("100%");
+
+        HorizontalLayout bar = new HorizontalLayout();
+        bar.addComponents(previous, next);
+        bar.setSpacing(true);
+        bar.setWidth("100%");
+
+        content.setSizeFull();
 
         addComponents(progressBar, content, bar);
     }
 
     public void previous(Button.ClickEvent event) {
-        content.setContent(wizardViewsList.get(currentWizardViewIndex));
+        if (currentWizardViewIndex > 0) {
+            next.setEnabled(true);
+            currentWizardViewIndex--;
+            content.setContent(wizardViewsList.get(currentWizardViewIndex));
+        }
+        if (currentWizardViewIndex < 1) {
+            previous.setEnabled(false);
+        }
+
+        progressBar.setValue((float) currentWizardViewIndex / wizardViewsList.size());
     }
 
     public void next(Button.ClickEvent event) {
-        content.setContent(wizardViewsList.get(currentWizardViewIndex));
+        if (currentWizardViewIndex < wizardViewsList.size() - 1) {
+            previous.setEnabled(true);
+            currentWizardViewIndex++;
+            content.setContent(wizardViewsList.get(currentWizardViewIndex));
+        }
+        if (currentWizardViewIndex == wizardViewsList.size() - 1) {
+            next.setEnabled(false);
+        }
+
+        progressBar.setValue((float) currentWizardViewIndex / wizardViewsList.size());
     }
 
     public void save(Button.ClickEvent event) {
         // Commit the fields from UI to DAO
-//            formFieldBindings.commit();
+        // formFieldBindings.commit();
 
         // Save DAO to backend with direct synchronous service API
-//        getUI().questionnaireRepository.salvar(contact);
+        // getUI().questionnaireRepository.salvar(contact);
 
         String msg = "Respostas registradas com sucesso!";
         Notification.show(msg, Notification.Type.TRAY_NOTIFICATION);
-//            getUI().refreshContacts();
+        // getUI().refreshContacts();
     }
 
     public void cancel(Button.ClickEvent event) {
         // Place to call business logic.
         Notification.show("Cancelled", Notification.Type.TRAY_NOTIFICATION);
-//        getUI().contactList.select(null);
+        // getUI().contactList.select(null);
     }
 }

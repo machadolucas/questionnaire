@@ -14,7 +14,6 @@ public class FirstWizardView extends WizardViews {
     TextField email = new TextField("Email");
     DateField birthDate = new DateField("Birth date");
 
-
     public FirstWizardView() {
         configureComponents();
         buildLayout();
