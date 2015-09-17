@@ -1,10 +1,9 @@
 package me.machadolucas.questionnaire.entity;
 
-import java.util.List;
-
 import lombok.Data;
-
 import org.springframework.data.annotation.Id;
+
+import java.util.List;
 
 @Data
 public class Questionnaire {
