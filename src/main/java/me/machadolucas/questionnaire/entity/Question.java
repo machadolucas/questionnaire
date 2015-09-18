@@ -18,13 +18,6 @@ public class Question {
     private String title;
     private String description;
 
-    private Map<Devices, Integer> devices;
-
-    public Question() {
-        devices = new HashMap<>();
-        for (Devices device : Devices.values()) {
-            devices.put(device, Integer.valueOf(0));
-        }
-    }
+    private Map<String, Double> devices = new HashMap<>();
 
 }

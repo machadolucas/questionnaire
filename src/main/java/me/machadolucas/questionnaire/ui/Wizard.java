@@ -11,6 +11,7 @@ import me.machadolucas.questionnaire.repository.QuestionnaireRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
@@ -49,6 +50,7 @@ public class Wizard extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
+        Page.getCurrent().setTitle("Efeito do dispositivo de entrada na experiência de jogadores");
         configureComponents();
         buildLayout();
     }
@@ -60,13 +62,13 @@ public class Wizard extends UI {
         for (Question question : questions) {
             wizardViewsList.add(new QuestionsView(question));
         }
+        wizardViewsList.add(new LastWizardView());
 
         previous.setEnabled(false);
 
         next.setStyleName(ValoTheme.BUTTON_PRIMARY);
         // next.setClickShortcut(ShortcutAction.KeyCode.ENTER);
         content.setContent(wizardViewsList.get(currentWizardViewIndex));
-
     }
 
     private void buildLayout() {
@@ -95,6 +97,7 @@ public class Wizard extends UI {
     public void previous(Button.ClickEvent event) {
         if (currentWizardViewIndex > 0) {
             next.setEnabled(true);
+            next.setCaption("Próximo");
             currentWizardViewIndex--;
             content.setContent(wizardViewsList.get(currentWizardViewIndex));
         }
@@ -106,33 +109,31 @@ public class Wizard extends UI {
     }
 
     public void next(Button.ClickEvent event) {
+        if (wizardViewsList.get(currentWizardViewIndex) instanceof QuestionsView) {
+            QuestionsView currentView = (QuestionsView) wizardViewsList.get(currentWizardViewIndex);
+            currentView.copySlidersValues();
+        }
         if (currentWizardViewIndex < wizardViewsList.size() - 1) {
             previous.setEnabled(true);
             currentWizardViewIndex++;
             content.setContent(wizardViewsList.get(currentWizardViewIndex));
+        } else {
+            progressBar.setValue(1.0f);
+            save();
         }
         if (currentWizardViewIndex == wizardViewsList.size() - 1) {
-            next.setEnabled(false);
+            next.setCaption("Enviar");
         }
 
         progressBar.setValue((float) currentWizardViewIndex / wizardViewsList.size());
     }
 
-    public void save(Button.ClickEvent event) {
-        // Commit the fields from UI to DAO
-        // formFieldBindings.commit();
+    private void save() {
 
-        // Save DAO to backend with direct synchronous service API
-        // getUI().questionnaireRepository.salvar(contact);
+        //save questions
+        //set questions and basic fields to questionnary
 
         String msg = "Respostas registradas com sucesso!";
-        Notification.show(msg, Notification.Type.TRAY_NOTIFICATION);
-        // getUI().refreshContacts();
-    }
-
-    public void cancel(Button.ClickEvent event) {
-        // Place to call business logic.
-        Notification.show("Cancelled", Notification.Type.TRAY_NOTIFICATION);
-        // getUI().contactList.select(null);
+        Notification.show(msg, Notification.Type.HUMANIZED_MESSAGE);
     }
 }

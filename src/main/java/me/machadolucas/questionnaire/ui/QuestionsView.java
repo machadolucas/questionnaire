@@ -1,5 +1,6 @@
 package me.machadolucas.questionnaire.ui;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,7 @@ import me.machadolucas.questionnaire.entity.Devices;
 import me.machadolucas.questionnaire.entity.Question;
 
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -38,7 +40,7 @@ public class QuestionsView extends WizardViews {
 
         title.setValue(this.question.getTitle());
         description.setValue(this.question.getDescription());
-        instructions.setValue("Para cada dispositivo, selecione a intensidade de " + this.question.getTitle());
+        instructions.setValue("Para cada dispositivo, ajuste a intensidade percebida de " + this.question.getTitle());
 
         for (Devices device : Devices.values()) {
             sliders.add(new Slider(device.getName()));
@@ -53,10 +55,23 @@ public class QuestionsView extends WizardViews {
 
         VerticalLayout questionTextHead = new VerticalLayout();
         questionTextHead.setSpacing(true);
+        questionTextHead.setMargin(true);
         questionTextHead.addComponents(title, description, instructions);
+        List<HorizontalLayout> sliderWrappers = new ArrayList<>();
         for (Slider slider : sliders) {
+            HorizontalLayout sliderWrapper = new HorizontalLayout();
+            Label leftScale = new Label("Nenhuma");
+            Label rightScale = new Label("Total");
+
             slider.setWidth("400px");
-            questionTextHead.addComponent(slider);
+            sliderWrapper.addComponents(leftScale, slider, rightScale);
+            sliderWrapper.setComponentAlignment(leftScale, Alignment.BOTTOM_RIGHT);
+            sliderWrapper.setComponentAlignment(rightScale, Alignment.BOTTOM_LEFT);
+            sliderWrapper.setSpacing(true);
+            sliderWrappers.add(sliderWrapper);
+        }
+        for (HorizontalLayout sliderWrapper : sliderWrappers) {
+            questionTextHead.addComponent(sliderWrapper);
         }
 
         HorizontalLayout questionForm = new HorizontalLayout();
@@ -65,5 +80,12 @@ public class QuestionsView extends WizardViews {
         questionForm.addComponents(image, questionTextHead);
 
         addComponents(questionForm);
+    }
+
+    public void copySlidersValues() {
+        for (Slider slider : sliders) {
+            this.question.getDevices().put(slider.getCaption(), slider.getValue());
+        }
+
     }
 }
