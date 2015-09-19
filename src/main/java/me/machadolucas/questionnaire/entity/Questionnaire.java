@@ -15,6 +15,8 @@ public class Questionnaire {
     @Id
     private String id;
 
+    private Integer personId;
+
     private Integer age;
     private String gender;
 

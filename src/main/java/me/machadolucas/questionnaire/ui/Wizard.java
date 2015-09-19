@@ -1,6 +1,7 @@
 package me.machadolucas.questionnaire.ui;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -30,13 +31,13 @@ public class Wizard extends UI {
 
     // =========================================================
 
-    ProgressBar progressBar = new ProgressBar(0);
-    Panel content = new Panel();
+    ProgressBar progressBar;
+    Panel content;
 
-    VerticalLayout wizard = new VerticalLayout();
-    List<WizardViews> wizardViewsList = new LinkedList<>();
+    VerticalLayout wizard;
+    List<WizardViews> wizardViewsList;
 
-    private int currentWizardViewIndex = 0;
+    private int currentWizardViewIndex;
     Button previous = new Button("Anterior", this::previous);
     Button next = new Button("Próximo", this::next);
 
@@ -50,6 +51,11 @@ public class Wizard extends UI {
     }
 
     private void configureComponents() {
+        wizard = new VerticalLayout();
+        content = new Panel();
+        currentWizardViewIndex = 0;
+        progressBar = new ProgressBar(0);
+        wizardViewsList = new LinkedList<>();
 
         wizardViewsList.add(new FirstWizardView());
         List<Question> questions = QuestionsCreator.createQuestions();
@@ -59,9 +65,12 @@ public class Wizard extends UI {
         wizardViewsList.add(new LastWizardView());
 
         previous.setEnabled(false);
+        previous.setClickShortcut(ShortcutAction.KeyCode.ARROW_LEFT);
 
+        next.setEnabled(true);
+        next.setCaption("Próximo");
         next.setStyleName(ValoTheme.BUTTON_PRIMARY);
-        // next.setClickShortcut(ShortcutAction.KeyCode.ENTER);
+        next.setClickShortcut(ShortcutAction.KeyCode.ARROW_RIGHT);
         content.setContent(wizardViewsList.get(currentWizardViewIndex));
     }
 
@@ -115,6 +124,9 @@ public class Wizard extends UI {
         } else {
             progressBar.setValue(1.0f);
             save();
+            previous.setEnabled(false);
+            next.setEnabled(false);
+            return;
         }
         if (currentWizardViewIndex == wizardViewsList.size() - 1) {
             next.setCaption("Enviar");
@@ -141,18 +153,38 @@ public class Wizard extends UI {
         //save questions
         questions = questionRepository.insert(questionsToInsert);
 
-        questionnaire.setQuestions(questions);
         questionnaire.setAge(new Integer(firstView.getAge().getValue()));
         questionnaire.setGender(firstView.getGender().getValue().toString());
+        questionnaire.setQuestions(questions);
+        List<Component> sortedPreferences = lastView.getSorter().getComponentsList();
+        for (int i = 0; i < sortedPreferences.size(); i++) {
+            Component c = sortedPreferences.get(i);
+            questionnaire.getPreferredDevices().put(i + 1, c.getCaption());
+        }
         questionnaire.setMoreInformation(lastView.getMoreInformation().getValue());
 
+        long amountOfRegisters = questionnaireRepository.count();
+        questionnaire.setPersonId((int) amountOfRegisters + 1);
         //save questionnaire
         questionnaireRepository.insert(questionnaire);
 
+        VerticalLayout endPage = new VerticalLayout();
+        endPage.setMargin(true);
+        endPage.setSpacing(true);
+        Label message = new Label("Repostas registradas com sucesso! Obrigado!");
+        message.setStyleName(ValoTheme.LABEL_H2);
+        Label personIdLabel = new Label("ID: " + (amountOfRegisters + 1));
+        personIdLabel.setStyleName(ValoTheme.LABEL_BOLD);
+        Label gap = new Label();
+        gap.setHeight("10em");
+        Button renewBtn = new Button("Novo formulário", this::renew);
+        endPage.addComponents(message, personIdLabel, gap, renewBtn);
+        content.setContent(endPage);
+
+    }
+
+    public void renew(Button.ClickEvent event) {
         configureComponents();
         buildLayout();
-
-        String msg = "Respostas registradas com sucesso!";
-        Notification.show(msg, Notification.Type.HUMANIZED_MESSAGE);
     }
 }

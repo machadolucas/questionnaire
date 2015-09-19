@@ -51,7 +51,7 @@ public class FirstWizardView extends WizardViews {
         instructionsForNextPage2.setStyleName(ValoTheme.LABEL_LARGE);
 
         Label gap = new Label();
-        gap.setHeight("1em");
+        gap.setHeight("5em");
 
         addComponents(pageTitle, age, gender, gap, instructionsForNextPage1, instructionsForNextPage2);
     }
