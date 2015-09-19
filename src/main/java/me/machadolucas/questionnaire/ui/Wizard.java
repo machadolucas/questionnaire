@@ -1,37 +1,32 @@
 package me.machadolucas.questionnaire.ui;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import me.machadolucas.questionnaire.entity.Question;
-import me.machadolucas.questionnaire.entity.Questionnaire;
-import me.machadolucas.questionnaire.helper.QuestionsCreator;
-import me.machadolucas.questionnaire.repository.QuestionnaireRepository;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.vaadin.annotations.Theme;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.ProgressBar;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
+import me.machadolucas.questionnaire.entity.Question;
+import me.machadolucas.questionnaire.entity.Questionnaire;
+import me.machadolucas.questionnaire.helper.QuestionsCreator;
+import me.machadolucas.questionnaire.repository.QuestionRepository;
+import me.machadolucas.questionnaire.repository.QuestionnaireRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Theme("valo")
 @SpringUI
 public class Wizard extends UI {
 
     @Autowired
-    public QuestionnaireRepository questionnaireRepository;
+    private QuestionnaireRepository questionnaireRepository;
 
-    Questionnaire questionnaire;
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    Questionnaire questionnaire = new Questionnaire();
 
     // =========================================================
 
@@ -42,7 +37,6 @@ public class Wizard extends UI {
     List<WizardViews> wizardViewsList = new LinkedList<>();
 
     private int currentWizardViewIndex = 0;
-
     Button previous = new Button("Anterior", this::previous);
     Button next = new Button("Próximo", this::next);
 
@@ -98,6 +92,7 @@ public class Wizard extends UI {
         if (currentWizardViewIndex > 0) {
             next.setEnabled(true);
             next.setCaption("Próximo");
+            next.setStyleName(ValoTheme.BUTTON_PRIMARY);
             currentWizardViewIndex--;
             content.setContent(wizardViewsList.get(currentWizardViewIndex));
         }
@@ -123,6 +118,7 @@ public class Wizard extends UI {
         }
         if (currentWizardViewIndex == wizardViewsList.size() - 1) {
             next.setCaption("Enviar");
+            next.setStyleName(ValoTheme.BUTTON_DANGER);
         }
 
         progressBar.setValue((float) currentWizardViewIndex / wizardViewsList.size());
@@ -130,8 +126,31 @@ public class Wizard extends UI {
 
     private void save() {
 
+        FirstWizardView firstView = (FirstWizardView) wizardViewsList.get(0);
+
+        List<Question> questions = new LinkedList<>();
+        final List<Question> questionsToInsert = questions;
+        wizardViewsList.stream().filter(view -> view instanceof QuestionsView).forEach(view -> {
+            QuestionsView questionView = (QuestionsView) view;
+            questionsToInsert.add(questionView.getQuestion());
+
+        });
+
+        LastWizardView lastView = (LastWizardView) wizardViewsList.get(wizardViewsList.size() - 1);
+
         //save questions
-        //set questions and basic fields to questionnary
+        questions = questionRepository.insert(questionsToInsert);
+
+        questionnaire.setQuestions(questions);
+        questionnaire.setAge(new Integer(firstView.getAge().getValue()));
+        questionnaire.setGender(firstView.getGender().getValue().toString());
+        questionnaire.setMoreInformation(lastView.getMoreInformation().getValue());
+
+        //save questionnaire
+        questionnaireRepository.insert(questionnaire);
+
+        configureComponents();
+        buildLayout();
 
         String msg = "Respostas registradas com sucesso!";
         Notification.show(msg, Notification.Type.HUMANIZED_MESSAGE);

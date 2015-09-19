@@ -1,21 +1,17 @@
 package me.machadolucas.questionnaire.ui;
 
+import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
+import lombok.Getter;
+import me.machadolucas.questionnaire.entity.Devices;
+import me.machadolucas.questionnaire.entity.Question;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import me.machadolucas.questionnaire.entity.Devices;
-import me.machadolucas.questionnaire.entity.Question;
-
-import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 
 public class QuestionsView extends WizardViews {
 
@@ -24,6 +20,7 @@ public class QuestionsView extends WizardViews {
     Label instructions = new Label();
     Image image;
 
+    @Getter
     Question question;
 
     List<Slider> sliders = new LinkedList<>();
@@ -55,7 +52,7 @@ public class QuestionsView extends WizardViews {
 
         VerticalLayout questionTextHead = new VerticalLayout();
         questionTextHead.setSpacing(true);
-        questionTextHead.setMargin(true);
+        questionTextHead.setMargin(new MarginInfo(false, true, false, true));
         questionTextHead.addComponents(title, description, instructions);
         List<HorizontalLayout> sliderWrappers = new ArrayList<>();
         for (Slider slider : sliders) {
