@@ -1,10 +1,10 @@
 package me.machadolucas.questionnaire.helper;
 
+import me.machadolucas.questionnaire.entity.Question;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import me.machadolucas.questionnaire.entity.Question;
 
 public class QuestionsCreator {
 
@@ -103,7 +103,7 @@ public class QuestionsCreator {
 
         Question sensation = new Question();
         sensation.setName("sensation");
-        sensation.setTitle("Sensações");
+        sensation.setTitle("Estimulação dos Sentidos");
         sensation.setDescription("Entusiasmo por estimular os sentidos");
         questions.add(sensation);
 

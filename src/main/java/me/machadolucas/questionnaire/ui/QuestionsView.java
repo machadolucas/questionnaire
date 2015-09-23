@@ -61,6 +61,8 @@ public class QuestionsView extends WizardViews {
             Label rightScale = new Label("Total");
 
             slider.setWidth("400px");
+            slider.setMax(10);
+            slider.setMin(0);
             sliderWrapper.addComponents(leftScale, slider, rightScale);
             sliderWrapper.setComponentAlignment(leftScale, Alignment.BOTTOM_RIGHT);
             sliderWrapper.setComponentAlignment(rightScale, Alignment.BOTTOM_LEFT);

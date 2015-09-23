@@ -38,7 +38,7 @@ public class LastWizardView extends WizardViews {
         sorter.setSizeUndefined();
         sorter.setWidth("150px");
         sorter.addStyleName("no-horizontal-drag-hints");
-        sorter.setCaption("Segundo sua experiência no jogo Fruit Ninja, ordene os dispositivos do melhor ao pior");
+        sorter.setCaption("Segundo sua experiência no jogo Fruit Ninja, arraste e ordene os dispositivos do melhor ao pior, com o melhor no topo e o pior em baixo:");
         List<Button> devices = DevicesComponentsCreator.createDevicesLabels();
         devices.forEach(sorter::addComponent);
 
