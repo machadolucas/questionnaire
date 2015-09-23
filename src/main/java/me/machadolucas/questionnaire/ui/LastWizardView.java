@@ -150,7 +150,7 @@ public class LastWizardView extends WizardViews {
                 boolean sourceWasAfterTarget = true;
                 int index = 0;
                 Iterator<Component> componentIterator = layout
-                        .getComponentIterator();
+                        .iterator();
                 Component next = null;
                 while (next != target && componentIterator.hasNext()) {
                     next = componentIterator.next();
