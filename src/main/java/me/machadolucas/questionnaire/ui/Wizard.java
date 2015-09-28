@@ -150,6 +150,9 @@ public class Wizard extends UI {
 
         LastWizardView lastView = (LastWizardView) wizardViewsList.get(wizardViewsList.size() - 1);
 
+        for (Question q : questions) {
+            System.out.println(q);
+        }
         //save questions
         questions = questionRepository.insert(questionsToInsert);
 
@@ -163,9 +166,17 @@ public class Wizard extends UI {
         }
         questionnaire.setMoreInformation(lastView.getMoreInformation().getValue());
 
+        questionnaire.setXpGame(firstView.getXpGame().getValue().toString());
+        questionnaire.setXpGamepad(firstView.getXpGamepad().getValue().toString());
+        questionnaire.setXpKinect(firstView.getXpKinect().getValue().toString());
+        questionnaire.setXpMouse(firstView.getXpMouse().getValue().toString());
+        questionnaire.setXpTouch(firstView.getXpTouch().getValue().toString());
+
         long amountOfRegisters = questionnaireRepository.count();
         questionnaire.setPersonId((int) amountOfRegisters + 1);
+
         //save questionnaire
+        System.out.println(questionnaire);
         questionnaireRepository.insert(questionnaire);
 
         VerticalLayout endPage = new VerticalLayout();

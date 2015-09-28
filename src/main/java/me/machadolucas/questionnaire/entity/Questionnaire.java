@@ -29,4 +29,10 @@ public class Questionnaire {
 
     private String moreInformation;
 
+    private String xpGame;
+    private String xpMouse;
+    private String xpGamepad;
+    private String xpTouch;
+    private String xpKinect;
+
 }
